@@ -1,0 +1,197 @@
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    Node *left, *right;
+    bool lthread, rthread;
+
+    Node(int val) {
+        data = val;
+        left = right = nullptr;
+        lthread = rthread = true;
+    }
+};
+
+class ThreadedBST {
+private:
+    Node *root;
+
+public:
+    ThreadedBST() {
+        root = nullptr;
+    }
+
+    void insert(int val) {
+        Node *ptr = root;
+        Node *par = nullptr;
+
+        while (ptr != nullptr) {
+            if (val == ptr->data) {
+                cout << "Duplicate not allowed\n";
+                return;
+            }
+            par = ptr;
+
+            if (val < ptr->data) {
+                if (!ptr->lthread)
+                    ptr = ptr->left;
+                else
+                    break;
+            } else {
+                if (!ptr->rthread)
+                    ptr = ptr->right;
+                else
+                    break;
+            }
+        }
+
+        Node *newNode = new Node(val);
+
+        if (par == nullptr) {
+            root = newNode;
+        } else if (val < par->data) {
+            newNode->left = par->left;
+            newNode->right = par;
+            par->lthread = false;
+            par->left = newNode;
+        } else {
+            newNode->right = par->right;
+            newNode->left = par;
+            par->rthread = false;
+            par->right = newNode;
+        }
+        cout << "Inserted " << val << endl;
+    }
+
+    void inorder() {
+        Node *ptr = root;
+        if (ptr == nullptr) {
+            cout << "Tree is empty\n";
+            return;
+        }
+
+        // Go to leftmost
+        while (!ptr->lthread)
+            ptr = ptr->left;
+
+        while (ptr != nullptr) {
+            cout << ptr->data << " ";
+
+            // If right is thread, follow it
+            if (ptr->rthread)
+                ptr = ptr->right;
+            else {
+                // Go to leftmost of right child
+                ptr = ptr->right;
+                while (!ptr->lthread)
+                    ptr = ptr->left;
+            }
+        }
+        cout << endl;
+    }
+
+    // NOTE: This delete only works for leaf nodes to keep it simple
+    void deleteLeaf(int val) {
+        Node *ptr = root, *par = nullptr;
+        bool found = false;
+
+        while (ptr != nullptr) {
+            if (val == ptr->data) {
+                found = true;
+                break;
+            }
+
+            par = ptr;
+            if (val < ptr->data) {
+                if (!ptr->lthread)
+                    ptr = ptr->left;
+                else
+                    break;
+            } else {
+                if (!ptr->rthread)
+                    ptr = ptr->right;
+                else
+                    break;
+            }
+        }
+
+        if (!found || (!ptr->lthread && !ptr->rthread)) {
+            cout << "Only leaf node deletion is supported. Node not found or not a leaf.\n";
+            return;
+        }
+
+        if (par->left == ptr) {
+            par->lthread = true;
+            par->left = ptr->left;
+        } else {
+            par->rthread = true;
+            par->right = ptr->right;
+        }
+
+        delete ptr;
+        cout << "Deleted " << val << " (leaf only)\n";
+    }
+};
+
+int main() {
+    ThreadedBST tree;
+    int choice, val;
+
+    do {
+        cout << "\n1. Insert\n2. Display Inorder\n3. Delete Leaf Node\n4. Exit\nEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            cout << "Enter value to insert: ";
+            cin >> val;
+            tree.insert(val);
+            break;
+        case 2:
+            cout << "Inorder Traversal: ";
+            tree.inorder();
+            break;
+        case 3:
+            cout << "Enter leaf node value to delete: ";
+            cin >> val;
+            tree.deleteLeaf(val);
+            break;
+        case 4:
+            cout << "Exiting...\n";
+            break;
+        default:
+            cout << "Invalid choice!\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}
+
+OUTPUT-
+1. Insert
+2. Display Inorder
+3. Delete Leaf Node
+4. Exit
+Enter choice: 1
+Enter value to insert: 10
+Inserted 10
+
+Enter choice: 1
+Enter value to insert: 5
+Inserted 5
+
+Enter choice: 1
+Enter value to insert: 15
+Inserted 15
+
+Enter choice: 2
+Inorder Traversal: 5 10 15
+
+Enter choice: 3
+Enter leaf node value to delete: 15
+Deleted 15 (leaf only)
+
+Enter choice: 2
+Inorder Traversal: 5 10
