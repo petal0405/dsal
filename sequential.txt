@@ -1,0 +1,145 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+struct Student {
+    int roll;
+    string name, division, address;
+};
+
+// Add new student to file
+void addStudent() {
+    ofstream out("student_data.txt", ios::app);
+    if (!out) {
+        cout << "Error opening file!\n";
+        return;
+    }
+
+    Student s;
+    cout << "Enter Roll No: "; cin >> s.roll;
+    cin.ignore(); // to clear newline from buffer
+    cout << "Enter Name: "; getline(cin, s.name);
+    cout << "Enter Division: "; getline(cin, s.division);
+    cout << "Enter Address: "; getline(cin, s.address);
+
+    out << s.roll << " " << s.name << " " << s.division << " " << s.address << "\n";
+    out.close();
+    cout << "Student added!\n";
+}
+
+// Delete student by roll number
+void deleteStudent(int rollToDelete) {
+    ifstream in("student_data.txt");
+    ofstream temp("temp.txt");
+    Student s;
+    bool found = false;
+
+    while (in >> s.roll >> s.name >> s.division >> s.address) {
+        if (s.roll != rollToDelete)
+            temp << s.roll << " " << s.name << " " << s.division << " " << s.address << "\n";
+        else
+            found = true;
+    }
+
+    in.close(); temp.close();
+    remove("student_data.txt");
+    rename("temp.txt", "student_data.txt");
+
+    cout << (found ? "Student deleted!\n" : "Roll number not found!\n");
+}
+
+// Display student details by roll number
+void displayStudent(int rollToFind) {
+    ifstream in("student_data.txt");
+    Student s;
+    bool found = false;
+
+    while (in >> s.roll >> s.name >> s.division >> s.address) {
+        if (s.roll == rollToFind) {
+            cout << "\nRoll: " << s.roll << "\nName: " << s.name
+                 << "\nDivision: " << s.division << "\nAddress: " << s.address << "\n";
+            found = true;
+            break;
+        }
+    }
+
+    in.close();
+    if (!found) cout << "Student not found!\n";
+}
+
+// Main menu
+int main() {
+    int choice, roll;
+    do {
+        cout << "\n1. Add Student\n2. Delete Student\n3. Display Student\n4. Exit\nChoose: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: addStudent(); break;
+            case 2: cout << "Enter Roll No to delete: "; cin >> roll; deleteStudent(roll); break;
+            case 3: cout << "Enter Roll No to display: "; cin >> roll; displayStudent(roll); break;
+            case 4: cout << "Goodbye!\n"; break;
+            default: cout << "Invalid choice!\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}
+
+OUTPUT-
+1. Add Student
+2. Delete Student
+3. Display Student
+4. Exit
+Choose: 1
+Enter Roll No: 101
+Enter Name: Alice
+Enter Division: A
+Enter Address: Pune
+Student added!
+
+1. Add Student
+2. Delete Student
+3. Display Student
+4. Exit
+Choose: 1
+Enter Roll No: 102
+Enter Name: Bob
+Enter Division: B
+Enter Address: Mumbai
+Student added!
+
+1. Add Student
+2. Delete Student
+3. Display Student
+4. Exit
+Choose: 3
+Enter Roll No to display: 101
+
+Roll: 101
+Name: Alice
+Division: A
+Address: Pune
+
+1. Add Student
+2. Delete Student
+3. Display Student
+4. Exit
+Choose: 2
+Enter Roll No to delete: 102
+Student deleted!
+
+1. Add Student
+2. Delete Student
+3. Display Student
+4. Exit
+Choose: 3
+Enter Roll No to display: 102
+Student not found!
+
+1. Add Student
+2. Delete Student
+3. Display Student
+4. Exit
+Choose: 4
+Goodbye!
