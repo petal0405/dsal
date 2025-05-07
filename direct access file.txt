@@ -1,0 +1,160 @@
+#include <iostream>
+#include <fstream>
+#include <cstring>
+using namespace std;
+
+// Constants
+const char FILENAME[] = "students.dat"; // Binary file to store records
+const int NAME_SIZE = 20;               // Fixed length for student name
+
+// Structure to represent a student
+struct Student {
+    int roll;
+    char name[NAME_SIZE];
+    bool isDeleted = false; // Flag to indicate logical deletion
+
+    // Accept input for a student record
+    void input() {
+        cout << "Enter Roll No: ";
+        cin >> roll;
+        cout << "Enter Name: ";
+        cin >> ws;                     // Clear any leftover whitespace
+        cin.getline(name, NAME_SIZE); // Get full name with spaces
+    }
+
+    // Display student record only if not deleted
+    void display() const {
+        if (!isDeleted)
+            cout << "Roll: " << roll << ", Name: " << name << endl;
+    }
+};
+
+// Insert a record at the calculated byte position
+void insertRecord(fstream &file, const Student &s) {
+    // Each record occupies sizeof(Student) bytes.
+    // Position = (roll - 1) * size
+    int pos = (s.roll - 1) * sizeof(Student);
+    file.seekp(pos);                            // Move write pointer
+    file.write((char*)&s, sizeof(Student));     // Write binary data
+    cout << "Inserted.\n";
+}
+
+// Logically delete a record by setting isDeleted = true
+void deleteRecord(fstream &file, int roll) {
+    Student s;
+    int pos = (roll - 1) * sizeof(Student);
+    file.seekg(pos);                            // Move read pointer
+    file.read((char*)&s, sizeof(Student));      // Read record
+
+    // Check if valid and not already deleted
+    if (file && !s.isDeleted && s.roll == roll) {
+        s.isDeleted = true;                     // Mark as deleted
+        file.seekp(pos);                        // Move to same position
+        file.write((char*)&s, sizeof(Student)); // Overwrite record
+        cout << "Deleted.\n";
+    } else {
+        cout << "Not found or already deleted.\n";
+    }
+}
+
+// Display all non-deleted records
+void displayRecords(fstream &file) {
+    file.seekg(0);                        // Start from beginning of file
+    Student s;
+    cout << "\n-- Student Records --\n";
+    while (file.read((char*)&s, sizeof(Student))) {
+        s.display();                      // Show only if not deleted
+    }
+    file.clear();                         // Clear EOF flag
+}
+
+// Main function
+int main() {
+    // Open file for binary reading and writing
+    fstream file(FILENAME, ios::in | ios::out | ios::binary);
+    
+    // If file doesn't exist, create it
+    if (!file) {
+        ofstream newFile(FILENAME, ios::binary); // Create new binary file
+        newFile.close();
+        file.open(FILENAME, ios::in | ios::out | ios::binary); // Reopen for use
+    }
+
+    Student s;
+    int choice, roll;
+
+    // Menu-driven program
+    do {
+        cout << "\n1. Insert\n2. Delete\n3. Display\n0. Exit\nChoice: ";
+        cin >> choice;
+        switch (choice) {
+            case 1: // Insert
+                s.input();
+                insertRecord(file, s);
+                break;
+            case 2: // Delete
+                cout << "Enter roll to delete: ";
+                cin >> roll;
+                deleteRecord(file, roll);
+                break;
+            case 3: // Display
+                displayRecords(file);
+                break;
+        }
+    } while (choice != 0); // Exit loop if choice is 0
+
+    file.close(); // Close file before exit
+    return 0;
+}
+
+OUTPUT-
+1. Insert
+2. Delete
+3. Display
+0. Exit
+Choice: 1
+Enter Roll No: 1
+Enter Name: Alice
+Inserted.
+
+1. Insert
+2. Delete
+3. Display
+0. Exit
+Choice: 1
+Enter Roll No: 2
+Enter Name: Bob
+Inserted.
+
+1. Insert
+2. Delete
+3. Display
+0. Exit
+Choice: 3
+
+-- Student Records --
+Roll: 1, Name: Alice
+Roll: 2, Name: Bob
+
+1. Insert
+2. Delete
+3. Display
+0. Exit
+Choice: 2
+Enter roll to delete: 1
+Deleted.
+
+1. Insert
+2. Delete
+3. Display
+0. Exit
+Choice: 3
+
+-- Student Records --
+Roll: 2, Name: Bob
+
+1. Insert
+2. Delete
+3. Display
+0. Exit
+Choice: 0
