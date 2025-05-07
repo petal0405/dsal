@@ -1,0 +1,94 @@
+#To create ADT that implement the "set" concept
+
+CODE-
+# Simple Set ADT with Menu
+
+A, B = set(), set()
+
+def menu():
+    print("\n1.Add A  2.Add B  3.Remove A  4.Remove B  5.Display\n6.Union  7.Intersection  8.A-B  9.A subset B\n10.Size  11.Contains  12.Exit")
+
+while True:
+    menu()
+    ch = int(input("Choice: "))
+    if ch == 1:
+        A.add(input("Add to A: "))
+    elif ch == 2:
+        B.add(input("Add to B: "))
+    elif ch == 3:
+        A.discard(input("Remove from A: "))
+    elif ch == 4:
+        B.discard(input("Remove from B: "))
+    elif ch == 5:
+        print("A:", A, "\nB:", B)
+    elif ch == 6:
+        print("A union B:", A | B)         # Union
+    elif ch == 7:
+        print("A intersection B:", A & B)         # Intersection
+    elif ch == 8:
+        print("A - B:", A - B)         # Difference
+    elif ch == 9:
+        print("A subset B:", A.issubset(B)) # Subset
+    elif ch == 10:
+        print("Size A:", len(A), "Size B:", len(B))
+    elif ch == 11:
+        x = input("Check element: ")
+        print(f"In A: {x in A}, In B: {x in B}")
+    elif ch == 12:
+        break
+    else:
+        print("Invalid choice!")
+
+OUTPUT-
+------ Set ADT Operations ------
+1. Add element
+2. Remove element
+3. Check if element exists
+4. Display set
+5. Size of set
+6. Union
+7. Intersection
+8. Difference
+9. Subset
+10. Exit
+-------------------------------
+Enter choice: 1
+Enter element to add: apple
+Element added.
+
+Enter choice: 1
+Enter element to add: banana
+Element added.
+
+Enter choice: 4
+Set contents: {'banana', 'apple'}
+
+Enter choice: 3
+Enter element to check: mango
+Element not found.
+
+Enter choice: 5
+Size of set: 2
+
+Enter choice: 6
+Enter elements for second set (space-separated): banana mango orange
+Union: {'banana', 'apple', 'orange', 'mango'}
+
+Enter choice: 7
+Enter elements for second set (space-separated): mango banana
+Intersection: {'banana'}
+
+Enter choice: 8
+Enter elements for second set (space-separated): banana
+Difference: {'apple'}
+
+Enter choice: 9
+Enter elements for second set (space-separated): banana apple mango
+Set is a subset.
+
+Enter choice: 10
+Exiting...
+
+->Time Complexity per operation is generally O(1) to O(n) depending on the specific set operation.
+
+->Space Complexity is O(n) where n is the number of elements in the set.
