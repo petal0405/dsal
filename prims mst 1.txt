@@ -1,0 +1,92 @@
+#include <iostream>
+#include <vector>
+#include <queue> // for using min heap (priority queue)
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter number of cities: ";
+    cin >> n;
+
+    // Step 1: Create an adjacency matrix to store edge weights between cities
+    int cost[n][n];
+    cout << "Enter adjacency matrix (use -1 if no edge):\n";
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            cin >> cost[i][j]; // input edge weights or -1
+
+    // Step 2: Create a min heap to always pick the smallest edge
+    // Each element is a pair: (weight, destination_vertex)
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+
+    // Step 3: Keep track of visited nodes
+    vector<bool> visited(n, false);
+
+    int minCost = 0; // Total minimum cost of the MST
+
+    // Step 4: Start with the first node (node 0)
+    pq.push({0, 0}); // Push (0 cost, starting node)
+
+    while (!pq.empty()) {
+        // Step 5: Get the edge with minimum weight
+        auto [wt, u] = pq.top(); // u is the vertex, wt is the weight
+        pq.pop();
+
+        // Step 6: If already visited, skip
+        if (visited[u]) continue;
+
+        // Step 7: Mark the node as visited and add weight to total cost
+        visited[u] = true;
+        minCost += wt;
+
+        // Print which node is included and at what cost
+        cout << "Included node: " << u + 1 << ", Cost: " << wt << endl;
+
+        // Step 8: Push all adjacent vertices to the heap if not visited
+        for (int v = 0; v < n; ++v) {
+            if (!visited[v] && cost[u][v] != -1) {
+                pq.push({cost[u][v], v}); // Push edge (weight, vertex)
+            }
+        }
+    }
+
+    // Step 9: Print the total cost of the MST
+    cout << "Total Minimum Cost: " << minCost << endl;
+    return 0;
+}
+
+OUTPUT-
+Enter number of cities: 5
+Enter adjacency matrix (use -1 if no edge):
+-1 5 2 -1 -1
+5 -1 -1 3 4
+2 -1 -1 6 -1
+-1 3 6 -1 8
+-1 4 -1 8 -1
+Included node: 1, Cost: 0
+Included node: 3, Cost: 2
+Included node: 2, Cost: 5
+Included node: 4, Cost: 3
+Included node: 5, Cost: 4
+Total Minimum Cost: 14
+
+->Time: O(E log V)
+->Space: O(V²) for adjacency matrix
+
+VIVA-
+
+**1. Why are we using `vector`?**
+`vector` is a dynamic array in C++. It automatically resizes as needed and is easier to use than raw arrays. It's also compatible with STL features like iterators.
+
+
+**2. Why are we using `greater`?**
+The `greater` comparator is used with `priority_queue` to create a **min-heap**, since the default is a max-heap. It helps always pick the edge with the smallest weight.
+
+
+**3. What is a heap?**
+A heap is a special binary tree-based data structure used to implement priority queues. In a **min-heap**, the smallest element is always at the top, allowing quick access to the minimum.
+
+
+**4. Why do we use `auto`?**
+`auto` automatically determines the data type of a variable at compile time. It simplifies code and avoids manually writing long or complex types (like pairs or iterators).
+
