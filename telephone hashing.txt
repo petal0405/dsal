@@ -1,0 +1,143 @@
+#Hashing using collision resolution techniques
+
+CODE-
+# Class to store name and telephone number
+class TelephoneBook:
+    def __init__(self, name, tel_no):
+        self.name = name
+        self.tel_no = tel_no
+
+# Insertion using Quadratic Probing
+def insert_quadratic():
+    h = [None]*10
+    for _ in range(int(input("How many records? "))):
+        name = input("Enter Name: ")
+        tel = int(input("Enter Telephone Number: "))
+        index = tel % 10
+        j = 1
+        while h[index] is not None:
+            index = (tel % 10 + j*j) % 10
+            j += 1
+        h[index] = TelephoneBook(name, tel)
+    return h
+
+# Insertion using Double Hashing
+def insert_double():
+    h = [None]*10
+    for _ in range(int(input("How many records? "))):
+        name = input("Enter Name: ")
+        tel = int(input("Enter Telephone Number: "))
+        h1 = tel % 10
+        h2 = 1 + (tel % 10)
+        index = h1
+        j = 1
+        while h[index] is not None:
+            index = (h1 + j * h2) % 10
+            j += 1
+        h[index] = TelephoneBook(name, tel)
+    return h
+
+# Display the hash table
+def display(h):
+    print("\nIndex\tName\tTelephone")
+    for i, entry in enumerate(h):
+        if entry:
+            print(f"{i}\t{entry.name}\t{entry.tel_no}")
+        else:
+            print(f"{i}\t-\t-")
+
+# Search for a name in the hash table
+def search(h, name):
+    for i, entry in enumerate(h):
+        if entry and entry.name == name:
+            print(f"Found '{name}' at index {i} with number {entry.tel_no}")
+            return
+    print(f"'{name}' not found in table.")
+
+# Main menu-driven function
+def main():
+    h_qp = [None]*10
+    h_dh = [None]*10
+
+    while True:
+        print("\n1. Insert\n2. Display\n3. Search\n4. Exit")
+        choice = int(input("Enter choice: "))
+
+        if choice == 1:
+            method = int(input("1. Quadratic Probing\n2. Double Hashing\nChoose method: "))
+            if method == 1:
+                h_qp = insert_quadratic()
+            elif method == 2:
+                h_dh = insert_double()
+
+        elif choice == 2:
+            method = int(input("1. Display QP\n2. Display DH\nChoose method: "))
+            if method == 1:
+                display(h_qp)
+            elif method == 2:
+                display(h_dh)
+
+        elif choice == 3:
+            name = input("Enter name to search: ")
+            print("Searching in QP table...")
+            search(h_qp, name)
+            print("Searching in DH table...")
+            search(h_dh, name)
+
+        elif choice == 4:
+            print("Exiting...")
+            break
+        else:
+            print("Invalid input. Try again.")
+
+main()
+
+
+
+OUTPUT-
+1. Insert
+2. Display
+3. Search
+4. Exit
+Enter your choice: 1
+1. Quadratic Probing
+2. Double Hashing
+Enter method: 1
+How many records? 3
+Enter Name: alie
+Enter Telephone Number: 23
+Enter Name: bob
+Enter Telephone Number: 33
+Enter Name: charlie
+Enter Telephone Number: 43
+
+1. Insert
+2. Display
+3. Search
+4. Exit
+Enter your choice: 2
+1. Display QP
+2. Display DH
+Enter method: 1
+
+Index	Name	Telephone
+0	-	-
+1	-	-
+2	-	-
+3	alie	23
+4	bob	33
+5	-	-
+6	-	-
+7	-	-
+8	charlie	43
+9	-	-
+
+| Operation     | Time Complexity       | Space Complexity |
+| ------------- | --------------------- | ---------------- |
+| Insertion     | O(1) best, O(n) worst | O(n)             |
+| Search        | O(1) best, O(n) worst | O(n)             |
+| Display       | O(n)                  | O(n)             |
+| Space (table) | -                     | O(n)             |
+
+
+
