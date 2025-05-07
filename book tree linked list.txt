@@ -1,0 +1,89 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+const int MAX = 10;
+
+struct Node {
+    string label;
+    int count;
+    Node* children[MAX];
+};
+
+class BookTree {
+    Node* root;
+
+public:
+    BookTree() {
+        root = nullptr;
+    }
+
+    void create() {
+        root = new Node;
+        cout << "Enter the name of the book: ";
+        getline(cin, root->label);
+
+        cout << "Enter number of chapters: ";
+        cin >> root->count;
+        cin.ignore();
+
+        for (int i = 0; i < root->count; i++) {
+            root->children[i] = new Node;
+            cout << "Enter name of Chapter " << i + 1 << ": ";
+            getline(cin, root->children[i]->label);
+
+            cout << "Enter number of sections in Chapter " << i + 1 << ": ";
+            cin >> root->children[i]->count;
+            cin.ignore();
+
+            for (int j = 0; j < root->children[i]->count; j++) {
+                root->children[i]->children[j] = new Node;
+                cout << "  Enter name of Section " << j + 1 << ": ";
+                getline(cin, root->children[i]->children[j]->label);
+
+                cout << "  Enter number of Subsections in Section " << j + 1 << ": ";
+                cin >> root->children[i]->children[j]->count;
+                cin.ignore();
+
+                for (int k = 0; k < root->children[i]->children[j]->count; k++) {
+                    root->children[i]->children[j]->children[k] = new Node;
+                    cout << "    Enter name of Subsection " << k + 1 << ": ";
+                    getline(cin, root->children[i]->children[j]->children[k]->label);
+                    root->children[i]->children[j]->children[k]->count = 0;
+                }
+            }
+        }
+    }
+
+    void display() {
+        if (root == nullptr) {
+            cout << "Book tree is empty.\n";
+            return;
+        }
+
+        cout << "\nBook Title: " << root->label << endl;
+
+        for (int i = 0; i < root->count; i++) {
+            cout << " Chapter " << i + 1 << ": " << root->children[i]->label << endl;
+
+            for (int j = 0; j < root->children[i]->count; j++) {
+                cout << "   Section " << j + 1 << ": " << root->children[i]->children[j]->label << endl;
+
+                for (int k = 0; k < root->children[i]->children[j]->count; k++) {
+                    cout << "     Subsection " << k + 1 << ": " << root->children[i]->children[j]->children[k]->label << endl;
+                }
+            }
+        }
+    }
+};
+
+// -------- Main --------
+int main() {
+    BookTree book;
+    book.create();
+
+    cout << "\n--- Book Structure ---\n";
+    book.display();
+
+    return 0;
+}
